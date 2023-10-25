@@ -47,8 +47,7 @@ Schema
 - **description**: a short text description explaining the transaction
 
 
-Example: 
-
+Example:
 ```json
 {
     "transactionId": "tqZi6QapS41zcEHy",
