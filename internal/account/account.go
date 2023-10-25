@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/paulwizviz/webhook/internal/dbutil"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
