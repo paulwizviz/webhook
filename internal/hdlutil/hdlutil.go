@@ -16,3 +16,14 @@ func MethodPostValidate(next http.HandlerFunc) http.HandlerFunc {
 		next(rw, r)
 	}
 }
+
+func MethodGetValidate(next http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			log.Println("Invalid METHOD")
+			http.Error(rw, "Invalid HTTP method. Only GET requests are accepted.", http.StatusMethodNotAllowed)
+			return
+		}
+		next(rw, r)
+	}
+}
