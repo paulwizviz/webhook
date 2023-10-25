@@ -2,7 +2,9 @@
 package webhook
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -22,13 +24,27 @@ type TxnPayload struct {
 }
 
 func TransactionHandler(rw http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Received %s request from %s\n", r.Method, r.URL)
 
-	if r.Method != http.MethodPost {
-		http.Error(rw, "Invalid HTTP method. Only POST requests are accepted.", http.StatusMethodNotAllowed)
+	body := r.Body
+	defer r.Body.Close()
+
+	if body == nil {
+		http.Error(rw, "Empty body requests are not accepted.", http.StatusBadRequest)
 		return
 	}
 
+	b, err := io.ReadAll(body)
+	if err != nil {
+		http.Error(rw, "Unable to process body.", http.StatusBadRequest)
+		return
+	}
+
+	var payLoad TxnPayload
+	err = json.Unmarshal(b, &payLoad)
+	if err != nil {
+		http.Error(rw, "Invalid body.", http.StatusBadRequest)
+		return
+	}
 	rw.WriteHeader(http.StatusAccepted)
 
 }
