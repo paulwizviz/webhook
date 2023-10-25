@@ -45,6 +45,9 @@ func TransactionHandler(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Invalid body.", http.StatusBadRequest)
 		return
 	}
-	rw.WriteHeader(http.StatusAccepted)
 
+	// TODO
+	// Validate payload
+	// Insert to DB it transaction ID are the same it will not commit
+	rw.WriteHeader(http.StatusAccepted)
 }
