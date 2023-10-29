@@ -38,8 +38,8 @@ func main() {
 	txHandler := hdlutil.MethodPostValidate(webhook.TransactionHandler)
 	http.HandleFunc(webhook.EPPathTransaction, txHandler)
 
-	acctQureyByIDHandler := hdlutil.MethodGetValidate(account.QueryByIDHandler)
-	http.HandleFunc(account.EPPathAcctQueryByID, acctQureyByIDHandler)
+	acctQureyByIDHandler := hdlutil.ValidateGetMethod(account.NewQueryByIDHandler(db))
+	http.Handle(account.EPPathAcctQueryByID, acctQureyByIDHandler)
 
 	// Operation to start server
 	log.Printf("Starting server on: %d", port)

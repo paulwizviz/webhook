@@ -2,9 +2,9 @@
 package account
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -18,7 +18,11 @@ var (
 	EPPathAcctQueryByID = fmt.Sprintf("%s/", EPRootPath)
 )
 
-func QueryByIDHandler(rw http.ResponseWriter, r *http.Request) {
+type queryByIDHandler struct {
+	db *sql.DB
+}
+
+func (q queryByIDHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	parts := strings.Split(path, "/")
 	if len(parts) != 3 {
@@ -28,13 +32,7 @@ func QueryByIDHandler(rw http.ResponseWriter, r *http.Request) {
 	accountID := parts[2]
 
 	// We should have a step here to validate accountID
-
-	// Ideally we should only make DB connection onces
-	db, err := dbutil.ConnectMemDefault()
-	if err != nil {
-		log.Printf("DB error. %v", err)
-	}
-	order, err := dbutil.QueryOrderByID(db, accountID)
+	order, err := dbutil.QueryOrderByID(q.db, accountID)
 	if err != nil {
 		http.Error(rw, "No data.", http.StatusAccepted)
 		return
@@ -47,4 +45,10 @@ func QueryByIDHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 	rw.WriteHeader(http.StatusAccepted)
 	rw.Write(ord)
+}
+
+func NewQueryByIDHandler(db *sql.DB) http.Handler {
+	return queryByIDHandler{
+		db: db,
+	}
 }
