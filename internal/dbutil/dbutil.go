@@ -23,8 +23,8 @@ const (
 )
 
 var (
-	createOrderTableStmtStr = fmt.Sprintf(`CREATE TABLE IF NOT EXISTS order (%s TEXT AS PRIMARY KEY,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT)`, transactionId, accountID, orderId, transactionType, amount, currency, description)
-	insertOrderStmtStr      = fmt.Sprintf(`INSERT INTO order (%s,%s,%s,%s,%s,%s,%s,) VALUES ( ?, ?, ?, ?, ?, ?, ? )`, transactionId, accountID, orderId, transactionType, amount, currency, description)
+	createOrderTableStmtStr = fmt.Sprintf(`CREATE TABLE IF NOT EXISTS orders (%s TEXT, %s TEXT,%s TEXT, %s TEXT,%s TEXT, %s TEXT, %s TEXT)`, transactionId, accountID, orderId, transactionType, amount, currency, description)
+	insertOrderStmtStr      = fmt.Sprintf(`INSERT INTO orders (%s,%s,%s,%s,%s,%s,%s,) VALUES ( ?, ?, ?, ?, ?, ?, ? )`, transactionId, accountID, orderId, transactionType, amount, currency, description)
 )
 
 var (
@@ -54,6 +54,7 @@ func ConnectMemDefault() (*sql.DB, error) {
 }
 
 func CreateOrderTable(db *sql.DB) error {
+	log.Println(createOrderTableStmtStr)
 	_, err := db.Exec(createOrderTableStmtStr)
 	if err != nil {
 		return fmt.Errorf("%w-%s", ErrTable, err.Error())
@@ -78,7 +79,7 @@ func InsertOrder(stmt *sql.Stmt, order OrderModel) (sql.Result, error) {
 }
 
 func QueryOrderByID(db *sql.DB, id string) (OrderModel, error) {
-	row := db.QueryRow("SELECT  transactionId, accountID, orderId, transactionType, amount, currency, description FROM order WHERE accountID=?", id)
+	row := db.QueryRow("SELECT  transactionId, accountID, orderId, transactionType, amount, currency, description FROM orders WHERE accountID=?", id)
 	order := OrderModel{}
 	err := row.Scan(&order.TxnID, &order.AccountID)
 	if err == sql.ErrNoRows {
